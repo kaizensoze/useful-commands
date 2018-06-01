@@ -291,7 +291,7 @@ mac
   mac memory
   mac git:open # open current repository on github
 
-macaddress
+setmacaddr # macaddress
   echo $(echo 'current mac address:') $(macaddr)
   sudo /System/Library/PrivateFrameworks/Apple80211.framework/Resources/airport -z
   sudo ifconfig en0 ether $1
