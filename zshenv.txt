@@ -1,0 +1,115 @@
+
+f() {
+  find . -name "*$1*"
+}
+
+amz() {
+  open "https://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3Daps&field-keywords=$1"
+}
+
+wiki() {
+  open "https://en.wikipedia.org/wiki/$1"
+}
+
+chpwd() {  # show contents of folder just cd'ed into
+  emulate -L zsh
+  ls
+}
+
+duf() {  # sort files by human readable size
+  du -d 0 -h * | sort -rh
+}
+
+sniff() {
+  sudo tcpdump -vv -e -i $1 -n | grep -v `ip`
+}
+
+resetsimulators() {
+  instruments -s devices \
+    | grep "(\d[.0-9]\+) \[[0-9A-F]\{8\}-[0-9A-F]\{4\}-[0-9A-F]\{4\}-[0-9A-F]\{4\}-[0-9A-F]\{12\}\]" \
+    | grep -o "[0-9A-F]\{8\}-[0-9A-F]\{4\}-[0-9A-F]\{4\}-[0-9A-F]\{4\}-[0-9A-F]\{12\}" \
+    | while read -r line ; do
+      echo "Reseting Simulator with UDID: $line"
+          xcrun simctl erase $line
+        done
+}
+
+awslaunch() {
+  groupId=`aws ec2 describe-security-groups | jq -r '.SecurityGroups[] | select(.GroupName == "launch-wizard-1") | .GroupId'`
+  aws ec2 run-instances --image-id ami-fce3c696 --count 1 --instance-type t2.micro --key-name joegallo --security-group-ids $groupId --subnet-id subnet-65546d3c --block-device-mappings "[{\"DeviceName\":\"/dev/sda1\",\"Ebs\":{\"VolumeSize\":20,\"VolumeType\":\"gp2\",\"DeleteOnTermination\":true}}]"
+  unset groupId
+}
+
+awsssh() {
+  ec2Id=`aws ec2 describe-instances | jq -r '.Reservations[] | select (.Instances[].State.Name == "running") | .Instances[].PublicIpAddress'`
+  echo "ubuntu@$ec2Id" && ssh "ubuntu@$ec2Id"
+}
+
+awsid() {
+  aws ec2 describe-instances | jq -r '.Reservations[] | select (.Instances[].State.Name == "running") .Instances[].InstanceId'
+}
+
+cathtml() {
+  cat <<EOF
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+</head>
+<body>
+  <script src="script.js"></script>
+</body>
+</html>
+EOF
+}
+
+setmacaddr() {
+  sudo /System/Library/PrivateFrameworks/Apple80211.framework/Resources/airport -z
+  sudo ifconfig en0 ether $1
+  networksetup -detectnewhardware
+}
+
+#setip() {
+#  sudo ipconfig set en0 INFORM $1
+#}
+
+host2ip() {
+  ping -c 1 $1 | grep "64 bytes from " | awk '{print $4}' | cut -d ":" -f1
+  #nslookup $1 | grep 'Address' | sed -n 2p | awk '{print $2}'
+}
+
+host2address() {
+  local LAT_LNG=$(ip2geo `host2ip $1` | jq --raw-output '.loc')
+  curl -s "http://maps.googleapis.com/maps/api/geocode/json?latlng=$LAT_LNG&sensor=false" | jq -r '.results[1] | .formatted_address'
+}
+
+ip2geo() {
+  curl -s ipinfo.io/$1
+}
+
+whereami() {
+  curl -s ipinfo.io/$(curl -s ifconfig.co | awk "{print $1}")
+}
+
+gitwipe() {
+  git filter-branch --force --index-filter "git rm --cached --ignore-unmatch $1" --prune-empty --tag-name-filter cat -- --all
+  git push origin --force --all
+  git push origin --force --tags
+  git for-each-ref --format='delete %(refname)' refs/original | git update-ref --stdin
+  git reflog expire --expire=now --all
+  git gc --prune=now
+}
+
+getdpi() {
+  identify -format '%x,%y\n' $1
+}
+
+zshfunctions() {
+  print -l ${(ok)functions}
+}
+
+zman() {
+  PAGER="less -g -s '+/^       "$1"'" man zshall
+}
+

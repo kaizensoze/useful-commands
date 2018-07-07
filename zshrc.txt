@@ -1,0 +1,156 @@
+#!/bin/zsh
+
+if [[ $TTY = '' ]] then screen -xR; fi
+
+# autoload
+autoload -U colors && colors
+autoload -U compinit && compinit
+autoload -U promptinit && promptinit
+autoload -U zsh-mime-setup && zsh-mime-setup
+autoload -U zcalc
+autoload -U zmv
+
+# setopt
+setopt auto_pushd
+setopt pushd_ignore_dups
+setopt pushd_minus
+setopt pushd_to_home
+
+setopt inc_append_history
+setopt share_history
+setopt hist_find_no_dups
+setopt hist_ignore_all_dups
+setopt hist_reduce_blanks
+setopt hist_save_no_dups
+
+setopt aliases
+setopt always_to_end
+setopt auto_cd
+setopt auto_list
+setopt auto_param_slash
+setopt cdable_vars
+setopt complete_aliases
+setopt extended_glob
+setopt glob
+setopt ignoreeof
+setopt interactivecomments
+setopt kshglob
+setopt mark_dirs
+setopt no_glob_dots
+setopt prompt_percent
+
+# prompt
+PS1="%{$fg[yellow]%}%n@%m %~ %{$reset_color%}%"
+
+# history
+HISTFILE=~/.zsh_history
+HISTSIZE=2000
+SAVEHIST=2000
+
+# directory stack
+DIRSTACKSIZE=15
+DIRSTACKFILE=~/.zdirs
+if [[ -f $DIRSTACKFILE ]] && [[ $#dirstack -eq 0 ]]; then
+  dirstack=( ${(f)"$(< $DIRSTACKFILE)"} )
+  [[ -d $dirstack[1] ]] && cd $dirstack[1] && cd $OLDPWD
+fi
+chpwd() {
+  print -l $PWD ${(u)dirstack} >$DIRSTACKFILE
+}
+
+# emacs keybindings (-v for vi)
+bindkey -e
+bindkey ' ' magic-space
+bindkey "^R" history-incremental-pattern-search-backward
+bindkey "^T" history-incremental-pattern-search-forward
+
+# export
+export EDITOR=vim
+export GOPATH=$HOME/dev/go-workspace
+export HOMEBREW_GITHUB_API_TOKEN=<token>
+export MANPATH=/usr/local/opt/coreutils/libexec/gnuman:$MANPATH
+export PYTHONPATH=$PYTHONPATH:/Users/joegallo/dev/7parkdata/distro:/Users/joegallo/dev/7parkdata/datadelivery
+
+# path
+PATH=/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/opt/go/libexec/bin:$GOPATH/bin
+
+# z
+. `brew --prefix`/etc/profile.d/z.sh
+
+# nvm
+export NVM_DIR="$HOME/.nvm"
+. "/usr/local/opt/nvm/nvm.sh"
+
+# chruby
+source /usr/local/opt/chruby/share/chruby/chruby.sh
+source /usr/local/opt/chruby/share/chruby/auto.sh
+
+# pyenv
+#if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
+
+# virtualenv
+export WORKON_HOME=$HOME/.virtualenvs
+export PROJECT_HOME=$HOME/dev
+export PIP_VIRTUALENV_BASE=$WORKON_HOME
+export PIP_RESPECT_VIRTUALENV=true
+#source /usr/local/bin/virtualenvwrapper.sh
+
+# pyenv-virtualenv
+#export VIRTUALENVWRAPPER_PYTHON=/Users/joegallo/.pyenv/shims/python
+
+# aws
+source /usr/local/bin/aws_zsh_completer.sh
+
+# homebrew
+export HOMEBREW_NO_ANALYTICS=1
+
+# aliases
+alias be='bundle exec'
+alias brewbreakfast='brew update && brew upgrade && brew cleanup && brew prune'
+alias dh='dirs -v'
+alias diff='colordiff -u'
+alias git='hub' #'~/dev/bin/hub'
+alias gitconfig='$EDITOR ~/.gitconfig'
+alias hfind='cat ~/.zsh_history | grep'
+alias ip='ipexternal && ipinternal'
+alias ipexternal='curl -s ifconfig.co | awk "{print $1}"'
+alias ipinternal='ifconfig | grep -Eo "inet (addr:)?([0-9]*\.){3}[0-9]*" | grep -Eo "([0-9]*\.){3}[0-9]*" | grep -v "127.0.0.1"'
+alias broadip='ifconfig | grep -Eo "broadcast (addr:)?([0-9]*\.){3}[0-9]*" | cut -d" " -f2'
+alias jsonformat='python -mjson.tool'
+alias k9='sudo kill -9'
+alias k15='sudo kill -15'
+alias lsrepos="curl -s --user \"kaizensoze:<token>\" \"https://api.github.com/user/repos?per_page=100\" | jq -r '.[] | select(.fork == false) | \"\(.full_name)\t\(.clone_url)\"' | sort | column -t"
+alias ls='ls --color=auto --group-directories-first'
+alias macaddr='ifconfig en0 | ggrep -Po "ether \K.*"' # requires gnu grep
+alias mkdir='mkdir -p'
+alias pfind='ps aux | grep -i'
+alias 'pip install'='pip install --user'
+alias portfind='sudo lsof -i -P | grep'
+alias screen='screen -U'
+alias simpleserver='python -m SimpleHTTPServer 9000'
+alias sshconfig='$EDITOR ~/.ssh/config'
+alias sshlist='cat ~/.ssh/config'
+alias sshkey='cat ~/.ssh/id_rsa.pub | pbcopy'
+alias top='top -s1 -o cpu -R -F'
+alias vim='nvim'
+alias vimconfig='$EDITOR ~/vim/.vimrc'
+alias vp='vim -p'
+alias vo='vim -O'
+alias vd='vimdiff'
+alias zshconfig='$EDITOR ~/.zshrc'
+alias zshenvconfig='$EDITOR ~/.zshenv'
+alias zshreload='source ~/.zshrc'
+
+# app aliases
+alias chrome='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+alias firefox='/Applications/Firefox.app/Contents/MacOS/firefox'
+alias preview='/Applications/Preview.app/Contents/MacOS/Preview'
+alias vlc='/Applications/VLC.app/Contents/MacOS/VLC'
+
+# colorize + completion
+export CLICOLOR=1
+eval $(dircolors -b)
+zmodload -i zsh/complist
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+
+# see ~/.zshenv for functions
