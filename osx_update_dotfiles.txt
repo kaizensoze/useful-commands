@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+cp ~/Library/Fonts/* fonts
+
+cp ~/{.gitconfig,.gitattributes,.gitignore_global} git/
+cp ~/.config/hub hub/
+cp ~/.ssh/config ssh/
+cp ~/vim/.vimrc vim/
+cp ~/.zshrc zsh/.zshrc
+cp ~/.zshenv zsh/.zshenv
+cp ~/.ruby-version chruby/
+ls ~/.rubies > chruby/rubies.txt
+
+cp ~/Library/Preferences/com.apple.dock.plist dock/
+cp ~/Library/Preferences/com.apple.finder.plist finder/
+cp ~/Library/Preferences/com.googlecode.iterm2.plist iterm2/
+#cp ~/Library/Preferences/org.pqrs.Karabiner.plist karabiner/
+
+cp -r ~/Library/Services/* osx/automator/
+
+ls /Applications | sort > applications/applications.txt
+
+brew list | sort > brew/brew.txt
+brew cask list | sort > brew/brew-cask.txt
+
+cp ~/.npmrc npm/
+npm list -g --depth=0 > npm/npm.txt
+
+cp ~/.nvmrc nvm/
+
+pip list > pip/pip.txt
+
+gem list > gem/gem.txt
+
+cp ~/.irbrc irb/
+
+cp ~/.psqlrc psql/
+
+apm list --installed --bare > atom/packages.txt
+cp ~/.atom/{config.cson,init.coffee,keymap.cson,snippets.cson,styles.less} atom/
+
+cp ~/.tugboat tugboat/.tugboat
