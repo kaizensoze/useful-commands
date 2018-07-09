@@ -66,24 +66,23 @@ bindkey "^T" history-incremental-pattern-search-forward
 
 # export
 export EDITOR=vim
-export GOPATH=$HOME/dev/go-workspace
-export HOMEBREW_GITHUB_API_TOKEN=<token>
 export MANPATH=/usr/local/opt/coreutils/libexec/gnuman:$MANPATH
-export PYTHONPATH=$PYTHONPATH:/Users/joegallo/dev/7parkdata/distro:/Users/joegallo/dev/7parkdata/datadelivery
+export PATH=/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/opt/go/libexec/bin
 
-# path
-PATH=/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/opt/go/libexec/bin:$GOPATH/bin
+# aws
+source /usr/local/bin/aws_zsh_completer.sh
 
-# z
-. `brew --prefix`/etc/profile.d/z.sh
-
-# nvm
-export NVM_DIR="$HOME/.nvm"
-. "/usr/local/opt/nvm/nvm.sh"
+# brew
+export HOMEBREW_GITHUB_API_TOKEN=<TOKEN>
+export HOMEBREW_NO_ANALYTICS=1
 
 # chruby
 source /usr/local/opt/chruby/share/chruby/chruby.sh
 source /usr/local/opt/chruby/share/chruby/auto.sh
+
+# nvm
+export NVM_DIR="$HOME/.nvm"
+. "/usr/local/opt/nvm/nvm.sh"
 
 # pyenv
 #if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
@@ -98,18 +97,15 @@ export PIP_RESPECT_VIRTUALENV=true
 # pyenv-virtualenv
 #export VIRTUALENVWRAPPER_PYTHON=/Users/joegallo/.pyenv/shims/python
 
-# aws
-source /usr/local/bin/aws_zsh_completer.sh
-
-# homebrew
-export HOMEBREW_NO_ANALYTICS=1
+# z
+. `brew --prefix`/etc/profile.d/z.sh
 
 # aliases
 alias be='bundle exec'
 alias brewbreakfast='brew update && brew upgrade && brew cleanup && brew prune'
 alias dh='dirs -v'
 alias diff='colordiff -u'
-alias git='hub' #'~/dev/bin/hub'
+alias git='hub'
 alias gitconfig='$EDITOR ~/.gitconfig'
 alias hfind='cat ~/.zsh_history | grep'
 alias ip='ipexternal && ipinternal'
@@ -119,9 +115,9 @@ alias broadip='ifconfig | grep -Eo "broadcast (addr:)?([0-9]*\.){3}[0-9]*" | cut
 alias jsonformat='python -mjson.tool'
 alias k9='sudo kill -9'
 alias k15='sudo kill -15'
-alias lsrepos="curl -s --user \"kaizensoze:<token>\" \"https://api.github.com/user/repos?per_page=100\" | jq -r '.[] | select(.fork == false) | \"\(.full_name)\t\(.clone_url)\"' | sort | column -t"
+alias lsrepos="curl -s --user \"kaizensoze:<TOKEN>\" \"https://api.github.com/user/repos?per_page=100\" | jq -r '.[] | select(.fork == false) | \"\(.full_name)\t\(.clone_url)\"' | sort | column -t"
 alias ls='ls --color=auto --group-directories-first'
-alias macaddr='ifconfig en0 | ggrep -Po "ether \K.*"' # requires gnu grep
+alias macaddr='ifconfig en0 | ggrep -Po "ether \K.*"'
 alias mkdir='mkdir -p'
 alias pfind='ps aux | grep -i'
 alias 'pip install'='pip install --user'
@@ -130,7 +126,7 @@ alias screen='screen -U'
 alias simpleserver='python -m SimpleHTTPServer 9000'
 alias sshconfig='$EDITOR ~/.ssh/config'
 alias sshlist='cat ~/.ssh/config'
-alias sshkey='cat ~/.ssh/id_rsa.pub | pbcopy'
+alias sshkey='cat ~/.ssh/id_rsa.pub'
 alias top='top -s1 -o cpu -R -F'
 alias vim='nvim'
 alias vimconfig='$EDITOR ~/vim/.vimrc'
